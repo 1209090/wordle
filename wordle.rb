@@ -72,7 +72,7 @@ totals = Game::NAMES.map do |n|
 end
 puts totals.map { |r| r.join(',') }.join("\n")
 
-CSV.open('res.csv', 'w') do |csv|
+CSV.open('ranked.csv', 'w') do |csv|
   csv << Game::HEADERS
   games.each do |game|
     csv << game.to_csv
