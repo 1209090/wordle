@@ -74,6 +74,32 @@ class Scores
       acc
     end.transform_values { |ranks| ranks.sum / ranks.size }
   end
+
+  def metric1
+    games.reduce(Hash.new { |h, k| h[k] = [] }) do |acc, game|
+      vals = game.data.values.compact
+      avg = vals.sum.to_f / vals.size
+      game.data.each do |name, num|
+        next if num.nil?
+        acc[name] << avg - num
+      end
+      acc
+    end.transform_values { |scs| scs.sum }
+  end
+
+  def last_metric1(number = nil)
+    number ||= games.size
+    games.last(number).each_with_index.reverse_each.reduce({}) do |acc, (game, idx)|
+      vals = game.data.values.compact
+      avg = vals.sum.to_f / vals.size
+      Game::NAMES.each do |name|
+        num = game.data.fetch(name, nil)
+        acc[name] ||= []
+        acc[name] << (num ? avg - num : 0)
+      end
+      acc
+    end
+  end
 end
 
 def load_data(file = File.expand_path('wordle.csv', __dir__))
@@ -87,9 +113,43 @@ def puts_scores(title, data)
   puts data.to_a.sort_by(&:last).map { |a| "#{a[0]}\t#{a[1].round(3)}" }.join("\n")
 end
 
+# Copied from ActiveSupport
+def in_groups(arr, number, &block)
+  division = arr.size.div(number)
+  modulo = arr.size % number
+
+  groups = []
+  start = 0
+
+  number.times do |index|
+    length = division + (modulo > 0 && modulo > index ? 1 : 0)
+    groups << arr.slice(start, length)
+    start += length
+  end
+
+  if block_given?
+    groups.each(&block)
+  else
+    groups
+  end
+end
+
 games = load_data
 scores = Scores.new(games)
-puts_scores('Average rank', scores.average_rank)
+# puts_scores('Average rank', scores.average_rank)
+# puts_scores('Metric1', scores.last_metric1(4 * 7))
+
+num = 4
+output = [' ' * 11 + games.last(num * 7).reverse.map(&:word).join(' ')]
+output += scores.last_metric1(num * 7).map do |n, scs|
+  arr = []
+  in_groups(scs, num).each_with_index do |group, idx|
+    group.each { |e| arr << e * (num - idx) / num }
+  end
+  totals = arr.sum
+  "#{n} [#{'% 6.2f' % totals}] #{arr.map { |sc| '% 5.2f' % sc }.join(' ')}"
+end
+File.open('leaderboard', 'w') { |f| f.puts output }
 
 CSV.open('ranked.csv', 'w') do |csv|
   csv << Game::HEADERS
