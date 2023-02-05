@@ -1,5 +1,5 @@
 require 'csv'
-require 'minitest/autorun'
+# require 'minitest/autorun'
 
 def avg_rank(values)
   nils = values.select { |k, v| v.nil? }
@@ -57,20 +57,39 @@ class Game
   end
 end
 
+class Scores
+  attr_reader :games
+
+  def initialize(games)
+    @games = games
+  end
+
+  def average_rank
+    games.reduce({}) do |acc, game|
+      next acc if game.ranks.compact.size == 1
+      game.ranks.each do |name, rank|
+        acc[name] ||= []
+        acc[name] << rank
+      end
+      acc
+    end.transform_values { |ranks| ranks.sum / ranks.size }
+  end
+end
+
 def load_data(file = File.expand_path('wordle.csv', __dir__))
   CSV.read(file, headers: true).map do |row|
     Game.new(row)
   end
 end
 
-games = load_data
-scores = games.map(&:scores)
-totals = Game::NAMES.map do |n|
-  scn = scores.reduce(0) { |acc, s| acc + s.fetch(n, 0) }
-  numbers = games.reject { |g| g.data[n].nil? }.size
-  [n, scn, numbers, (scn / numbers.to_f).round(2)]
+def puts_scores(title, data)
+  puts title
+  puts data.to_a.sort_by(&:last).map { |a| "#{a[0]}\t#{a[1].round(3)}" }.join("\n")
 end
-puts totals.map { |r| r.join(',') }.join("\n")
+
+games = load_data
+scores = Scores.new(games)
+puts_scores('Average rank', scores.average_rank)
 
 CSV.open('ranked.csv', 'w') do |csv|
   csv << Game::HEADERS
@@ -78,6 +97,15 @@ CSV.open('ranked.csv', 'w') do |csv|
     csv << game.to_csv
   end
 end
+
+__END__
+scores = games.map(&:scores)
+totals = Game::NAMES.map do |n|
+  scn = scores.reduce(0) { |acc, s| acc + s.fetch(n, 0) }
+  numbers = games.reject { |g| g.data[n].nil? }.size
+  [n, scn, numbers, (scn / numbers.to_f).round(2)]
+end
+puts totals.map { |r| r.join(',') }.join("\n")
 
 class Test < Minitest::Test
   def test_avg_rank
