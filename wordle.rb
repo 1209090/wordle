@@ -141,15 +141,23 @@ scores = Scores.new(games)
 
 num = 4
 output = [' ' * 11 + games.last(num * 7).reverse.map(&:word).join(' ')]
-output += scores.last_metric1(num * 7).map do |n, scs|
+
+data = scores.last_metric1(num * 7).transform_values do |scs|
   arr = []
   in_groups(scs, num).each_with_index do |group, idx|
     group.each { |e| arr << e * (num - idx) / num }
   end
-  totals = arr.sum
-  "#{n} [#{'% 6.2f' % totals}] #{arr.map { |sc| '% 5.2f' % sc }.join(' ')}"
+  arr
 end
-File.open('leaderboard', 'w') { |f| f.puts output }
+CSV.open('leaderboard', 'w') do |csv|
+  csv << ['слово'] + Game::NAMES
+  totals = data.transform_values { |scs| scs.sum }
+  csv << ['итого'] + Game::NAMES.map { |n| totals[n].round(2) }
+  data['word'] = games.last(num * 7).reverse.map(&:word)
+  (num * 7).times do |idx|
+    csv << [data['word'][idx]] + Game::NAMES.map { |k| data[k][idx].round(2) }
+  end
+end
 
 CSV.open('ranked.csv', 'w') do |csv|
   csv << Game::HEADERS
