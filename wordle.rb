@@ -149,7 +149,7 @@ data = scores.last_metric1(num * 7).transform_values do |scs|
   end
   arr
 end
-CSV.open('leaderboard', 'w') do |csv|
+CSV.open('leaderboard.csv', 'w') do |csv|
   csv << ['слово'] + Game::NAMES
   totals = data.transform_values { |scs| scs.sum }
   csv << ['итого'] + Game::NAMES.map { |n| totals[n].round(2) }
