@@ -159,13 +159,6 @@ CSV.open('leaderboard.csv', 'w') do |csv|
   end
 end
 
-CSV.open('ranked.csv', 'w') do |csv|
-  csv << Game::HEADERS
-  games.each do |game|
-    csv << game.to_csv
-  end
-end
-
 __END__
 scores = games.map(&:scores)
 totals = Game::NAMES.map do |n|
