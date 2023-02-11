@@ -159,6 +159,16 @@ CSV.open('leaderboard.csv', 'w') do |csv|
   end
 end
 
+absolute = games.reduce(Hash.new(0)) do |acc, game|
+  if game.ranks.compact.size > 1
+    name, _ = game.ranks.find { |_, v| v == 1 }
+    acc[name] += 1 if name
+  end
+  acc
+end
+
+puts absolute.sort_by(&:last).reverse.map { |n, sc| '%s% 3i' % [n, sc] }.join(', ')
+
 __END__
 scores = games.map(&:scores)
 totals = Game::NAMES.map do |n|
