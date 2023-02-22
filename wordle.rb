@@ -1,4 +1,5 @@
 require 'csv'
+require 'elo_rating'
 # require 'minitest/autorun'
 
 def avg_rank(values)
@@ -136,6 +137,39 @@ end
 
 games = load_data
 scores = Scores.new(games)
+
+def elo(games)
+  init_rating = 1000
+  players = [Game::NAMES.each_with_object({}) { |name, acc| acc[name] = init_rating }]
+  games.each do |game|
+    match = EloRating::Match.new
+    places = game.ranks.compact.to_a
+    places.each do |name, place|
+      match.add_player(rating: players.last[name], place: place)
+    end
+    new_rating = Game::NAMES.each_with_object({}) do |name, acc|
+      idx = places.index { |n, _| n == name }
+      acc[name] =
+        if idx
+          match.updated_ratings[idx]
+        else
+          players.last[name]
+        end
+    end
+    new_rating['word'] = game.word
+    players << new_rating
+  end
+  players
+end
+
+CSV.open('elo.csv', 'w') do |csv|
+  elo(games).each do |data|
+    row = Game::NAMES.map { |n| data[n] }
+    row.unshift(data['word'])
+    csv << row
+  end
+end
+
 # puts_scores('Average rank', scores.average_rank)
 # puts_scores('Metric1', scores.last_metric1(4 * 7))
 
