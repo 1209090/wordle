@@ -164,7 +164,10 @@ end
 
 minmax = [2000, 0]
 CSV.open('elo.csv', 'w') do |csv|
-  elo(games).each do |data|
+  csv << ['слово'] + Game::NAMES
+  ratings = elo(games)
+  header = ratings.shift
+  ratings.reverse_each do |data|
     row = Game::NAMES.map { |n| data[n] }
     row.each do |rating|
       minmax[0] = rating if minmax[0] > rating
