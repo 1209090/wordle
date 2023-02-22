@@ -162,13 +162,19 @@ def elo(games)
   players
 end
 
+minmax = [2000, 0]
 CSV.open('elo.csv', 'w') do |csv|
   elo(games).each do |data|
     row = Game::NAMES.map { |n| data[n] }
+    row.each do |rating|
+      minmax[0] = rating if minmax[0] > rating
+      minmax[1] = rating if minmax[1] < rating
+    end
     row.unshift(data['word'])
     csv << row
   end
 end
+p minmax
 
 # puts_scores('Average rank', scores.average_rank)
 # puts_scores('Metric1', scores.last_metric1(4 * 7))
