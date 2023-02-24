@@ -159,6 +159,7 @@ def elo(games)
     new_rating['word'] = game.word
     players << new_rating
   end
+  p players.each_with_object(Hash.new(0)) { |data, acc| data.each { |n, r| next if n == 'word'; acc[n] += r } }
   players
 end
 
