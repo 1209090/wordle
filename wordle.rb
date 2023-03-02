@@ -106,7 +106,7 @@ end
 def load_data(file = File.expand_path('wordle.csv', __dir__))
   CSV.read(file, headers: true).map do |row|
     Game.new(row)
-  end
+  end.reverse
 end
 
 def puts_scores(title, data)
