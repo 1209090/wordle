@@ -1,4 +1,9 @@
 import csv
+from datetime import datetime, timedelta
+
+START_DATE = datetime.fromisoformat('2022-01-06')
+print(START_DATE + timedelta(days=432))
+
 labels = ['L', 'T', 'F', 'S']
 
 def to_int(s):
