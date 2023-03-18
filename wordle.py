@@ -76,8 +76,7 @@ abschamps = []
 for line in lines:
     maxval = max(line[2:])
     champs = [i for i, x in enumerate(line[2:]) if x == maxval]
-    if len(champs) == 1:
-        abschamps.append(champs[0])
+    abschamps += champs
 abschamps = {x: abschamps.count(x) for x in set(abschamps)}
 print(abschamps)
 with open('week-champs.csv', 'w', newline='') as f:
