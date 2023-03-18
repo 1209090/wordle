@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime, timedelta
 from collections import defaultdict
+from itertools import groupby
 
 START_DATE = datetime.fromisoformat('2022-01-06')
 print(START_DATE + timedelta(days=432))
@@ -41,5 +42,33 @@ def make_day(row):
     res['date'] = date(row)
     return res
 
+def squash(days):
+    res = dict()
+    for d in days:
+        for k, v in d.items():
+            if k != 'date':
+                if k in res:
+                    res[k] += v
+                else:
+                    res[k] = v
+    return res
+
+def make_periods(days):
+    weeks = []
+    for k, g in groupby(days, key=lambda d: d['date'] - timedelta(days=d['date'].weekday())):
+        scores = squash(g)
+        scores['date'] = k.strftime('%Y-%m-%d')
+        weeks.append(scores)
+    return weeks
+
 vals = list(map(make_day, rows))
-print(vals)
+weeks = make_periods(vals)
+lines = []
+lines.append(['date'] + labels)
+for week in weeks:
+    line = [week[name] if name in week else 0 for name in labels]
+    line.insert(0, week['date'])
+    lines.append(line)
+with open('week-champs.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(lines)
