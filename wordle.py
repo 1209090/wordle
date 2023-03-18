@@ -57,17 +57,19 @@ def make_periods(days):
     weeks = []
     for k, g in groupby(days, key=lambda d: d['date'] - timedelta(days=d['date'].weekday())):
         scores = squash(g)
-        scores['date'] = k.strftime('%Y-%m-%d')
+        scores['date'] = k
         weeks.append(scores)
     return weeks
 
 vals = list(map(make_day, rows))
 weeks = make_periods(vals)
 lines = []
-lines.append(['date'] + labels)
+lines.append(['date', 'nums'] + labels)
 for week in weeks:
     line = [week[name] if name in week else 0 for name in labels]
-    line.insert(0, week['date'])
+    num = (week['date'] - START_DATE).days
+    line.insert(0, week['date'].strftime('%Y-%m-%d'))
+    line.insert(1, f"{num}-{num + 6}")
     lines.append(line)
 with open('week-champs.csv', 'w', newline='') as f:
     writer = csv.writer(f)
