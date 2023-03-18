@@ -71,6 +71,15 @@ for week in weeks:
     line.insert(0, week['date'].strftime('%Y-%m-%d'))
     line.insert(1, f"{num}-{num + 6}")
     lines.append(line)
+
+abschamps = []
+for line in lines:
+    maxval = max(line[2:])
+    champs = [i for i, x in enumerate(line[2:]) if x == maxval]
+    if len(champs) == 1:
+        abschamps.append(champs[0])
+abschamps = {x: abschamps.count(x) for x in set(abschamps)}
+print(abschamps)
 with open('week-champs.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerows(lines)
