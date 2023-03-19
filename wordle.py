@@ -1,6 +1,6 @@
 import csv
 from datetime import datetime, timedelta
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from itertools import groupby
 
 START_DATE = datetime.fromisoformat('2022-01-06')
@@ -8,11 +8,41 @@ print(START_DATE + timedelta(days=432))
 
 labels = ['L', 'T', 'F', 'S']
 
+Word = namedtuple('Word', ['id', 'word', 'date', 'guesses'])
+
+def create_word(row):
+    guesses = [to_int(row[name]) for name in labels]
+    return Word(row['id'], row['word'], START_DATE + timedelta(days=to_int(row['id'])), guesses)
+
+def scores(self):
+    guesses = self.guesses
+    scores = [7 - x if x is not None else None for x in guesses]
+
+def to_row(self):
+    return [self.id, self.date.strftime('%Y-%m-%d'), self.word] + self.guesses + ['']
+
+def header(self):
+    return ['id', 'date', 'word'] + labels + ['']
+
+Word.to_row = to_row
+Word.header = header
+
 def to_int(s):
     return int(s) if s.isdigit() else None
 
 with open('wordle.csv') as csvfile:
     rows = list(csv.DictReader(csvfile))
+
+example = create_word([x for x in rows if x['word'] == 'эстет'][0])
+assert(example.word == 'эстет')
+assert(example.guesses == [6, 4, 3, None])
+
+with open('extended-words.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    words = [create_word(row) for row in rows]
+    writer.writerow(words[0].header())
+    for word in words:
+        writer.writerow(word.to_row())
 
 def to_matches(row):
     day = []
