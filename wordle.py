@@ -92,6 +92,8 @@ def make_periods(days):
 
 vals = list(map(make_day, rows))
 weeks = make_periods(vals)
+current_id = to_int(rows[0]['id'])
+finished = False
 lines = []
 lines.append(['date', 'nums'] + labels)
 for week in weeks:
@@ -100,14 +102,24 @@ for week in weeks:
     line.insert(0, week['date'].strftime('%Y-%m-%d'))
     line.insert(1, f"{num}-{num + 6}")
     lines.append(line)
+    if current_id == num + 6:
+        finished = True
 
-abschamps = []
-for line in lines:
-    maxval = max(line[2:])
-    champs = [i for i, x in enumerate(line[2:]) if x == maxval]
-    abschamps += champs
-abschamps = {x: abschamps.count(x) for x in set(abschamps)}
-print(abschamps)
+def abschamps(lines, finished):
+    def champs(line):
+        maxval = max(line[2:])
+        champs = [i for i, x in enumerate(line[2:]) if x == maxval]
+        return champs
+    abschamps = []
+    for line in lines[2:]:
+        abschamps += champs(line)
+    if finished:
+        abschamps += champs(lines[1])
+    abschamps = {labels[x]: abschamps.count(x) for x in set(abschamps)}
+    return abschamps
+
+print(abschamps(lines, finished))
+
 with open('week-champs.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerows(lines)
