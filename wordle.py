@@ -10,27 +10,40 @@ labels = ['L', 'T', 'F', 'S']
 with open('elo.csv') as csvfile:
     ELO = list(csv.DictReader(csvfile))
 
-Word = namedtuple('Word', ['id', 'word', 'date', 'guesses', 'elo'])
+class Word:
+    def __init__(self, id, word, date, guesses, elo):
+        self.id = id
+        self.word = word
+        self.date = date
+        self.guesses = guesses
+        self.elo = elo
 
-def create_word(row):
-    guesses = [row[name] for name in labels]
-    elo = next(filter(lambda erow: erow['слово'] == row['word'], ELO), None)
-    if elo is not None:
-        elo = [elo['L'], elo['T'], elo['F'], elo['S']]
-    return Word(row['id'], row['word'], START_DATE + timedelta(days=to_int(row['id'])), guesses, elo)
+    def __repr__(self):
+        return f"Word({self.id}, {self.word}, {self.date}, {self.guesses}, {self.elo})"
+
+    def __str__(self):
+        return f"{self.id} {self.word} {self.date} {self.guesses} {self.elo}"
+
+    def to_row(self):
+        elo = [f"**{n}**" if n > 1100 else f"{n}" for n in self.elo]
+        return [str(self.id), self.date.strftime('%Y-%m-%d'), self.word] + self.guesses + elo
+
+    def header(self):
+        return ['id', 'date', 'word'] + labels + labels
+
+    # write a class method to create a Word object from a row
+    @classmethod
+    def create_word(self, row):
+        guesses = [row[name] for name in labels]
+        elo = next(filter(lambda erow: erow['слово'] == row['word'], ELO), None)
+        if elo is not None:
+            elo = list(map(to_int, [elo['L'], elo['T'], elo['F'], elo['S']]))
+        return Word(row['id'], row['word'], START_DATE + timedelta(days=to_int(row['id'])), guesses, elo)
 
 def scores(self):
     guesses = self.guesses
     scores = [7 - x if x is not None else None for x in guesses]
 
-def to_row(self):
-    return [str(self.id), self.date.strftime('%Y-%m-%d'), self.word] + self.guesses + self.elo
-
-def header(self):
-    return ['id', 'date', 'word'] + labels + labels
-
-Word.to_row = to_row
-Word.header = header
 
 def to_int(s):
     return int(s) if s.isdigit() else None
@@ -46,7 +59,7 @@ def mdrow(lst, file=None):
     return res
 
 with open('README.md', 'w', newline='\n') as f:
-    words = [create_word(row) for row in rows]
+    words = [Word.create_word(row) for row in rows]
     mdrow(words[0].header(), f)
     mdrow(['---'] * len(words[0].header()), f)
     for word in words:
