@@ -2,10 +2,18 @@ import csv
 from datetime import datetime, timedelta
 from collections import defaultdict, namedtuple
 from itertools import groupby
+import elo
+import pandas as pd
 
 START_DATE = datetime.fromisoformat('2022-01-06')
 
 labels = ['L', 'T', 'F', 'S']
+
+words = pd.read_csv('wordle.csv')
+for label in labels:
+    words[label + 'scores'] = 7 - pd.to_numeric(words[label], errors='coerce')
+
+match = elo.EloMatch([elo.Player(n, 1000) for n in labels])
 
 with open('elo.csv') as csvfile:
     ELO = list(csv.DictReader(csvfile))
@@ -55,49 +63,6 @@ def mdrow(lst, file=None):
     if file is not None:
         print(res, file=file)
     return res
-
-class EloMatch:
-    """EloMatch represents a match between several players."""
-    def add_player(rating, place):
-        """Add a player to the match."""
-        pass
-
-    def updated_ratings():
-        """Calculate the new Elo ratings."""
-        pass
-
-    @staticmethod
-    def k_factor(rating):
-        """Calculate the K-factor for a player with the given rating.
-        The K-factor is a constant that determines how much a player's rating changes after a match.
-        The K-factor is higher for lower-rated players and lower for higher-rated players.
-        """
-        if rating < 2100:
-            return 32
-        elif rating < 2400:
-            return 24
-        else:
-            return 16
-
-    @staticmethod
-    def expected_score(player_rating, opponent_rating):
-        """Calculate the expected score of a player given their rating and their opponent's rating.
-        Returns a float between 0 and 1 where 0.999 represents high certainty of the first player winning.
-        """
-        1.0 / (1 + (10 ** ((opponent_rating - player_rating) / 400.0)))
-
-    @staticmethod
-    def rating_adjustment(expected_score, actual_score, rating=None, k_factor=None):
-        """Calculate the amount a player's rating should change.
-        Arguments:
-            expected_score: a float between 0 and 1, representing the probability of the player winning
-            actual_score: 0, 0.5, or 1, whether the outcome was a loss, draw, or win (respectively)
-            rating: the rating of the player, used by the K-factor function
-            k_factor: the K-factor to use for this calculation to be used instead of the normal K-factor or K-factor function
-        Returns a positive or negative float representing the amount the player's rating should change.
-        """
-        k_factor = k_factor or k_factor(rating)
-        k_factor * (actual_score - expected_score)
 
 with open('README.md', 'w', newline='\n') as f:
     words = [Word.create_word(row) for row in rows]
