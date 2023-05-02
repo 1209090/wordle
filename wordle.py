@@ -13,6 +13,9 @@ words = pd.read_csv('wordle.csv')
 for label in labels:
     words[label + 'scores'] = 7 - pd.to_numeric(words[label], errors='coerce')
 
+elo_ratings = pd.read_csv('elo.csv')
+print({label: len(elo_ratings[elo_ratings[label] > 1100]) for label in labels})
+
 match = elo.EloMatch([elo.Player(n, 1000) for n in labels])
 
 with open('elo.csv') as csvfile:
