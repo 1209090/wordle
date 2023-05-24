@@ -7,7 +7,7 @@ import pandas as pd
 
 START_DATE = datetime.fromisoformat('2022-01-06')
 
-labels = ['L', 'T', 'F', 'S']
+labels = ['L', 'T', 'F', 'S', 'R']
 
 words = pd.read_csv('wordle.csv')
 for label in labels:
@@ -47,7 +47,7 @@ class Word:
         guesses = [row[name] for name in labels]
         elo = next(filter(lambda erow: erow['слово'] == row['word'], ELO), None)
         if elo is not None:
-            elo = list(map(to_int, [elo['L'], elo['T'], elo['F'], elo['S']]))
+            elo = list(map(to_int, [elo['L'], elo['T'], elo['F'], elo['S'], elo['R']]))
         return Word(row['id'], row['word'], START_DATE + timedelta(days=to_int(row['id'])), guesses, elo)
 
 def scores(self):

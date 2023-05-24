@@ -25,7 +25,7 @@ def avg_rank(values)
 end
 
 class Game
-  NAMES = %w[L T F S].freeze
+  NAMES = %w[L T F S R].freeze
   HEADERS = (%w[id word] + NAMES + NAMES.map { |n| "#{n} rank" }).freeze
 
   attr_reader :word, :id, :data
