@@ -14,7 +14,8 @@ for label in labels:
     words[label + 'scores'] = 7 - pd.to_numeric(words[label], errors='coerce')
 
 elo_ratings = pd.read_csv('elo.csv')
-print({label: len(elo_ratings[elo_ratings[label] > 1100]) for label in labels})
+over1100 = {label: len(elo_ratings[elo_ratings[label] > 1100]) for label in labels}
+print(f'Over 1100: {over1100}')
 
 match = elo.EloMatch([elo.Player(n, 1000) for n in labels])
 
@@ -149,7 +150,7 @@ def abschamps(lines, finished):
     abschamps = {labels[x]: abschamps.count(x) for x in set(abschamps)}
     return abschamps
 
-print(abschamps(lines, finished))
+print(f'Weekly champions: {abschamps(lines, finished)}')
 
 with open('week-champs.csv', 'w', newline='') as f:
     writer = csv.writer(f)
