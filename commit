@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+message = IO.readlines('wordle.csv')[1].split(',').first(2).join(' ')
+
+`git commit -am '#{message}'`
