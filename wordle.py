@@ -15,7 +15,7 @@ for label in labels:
 
 elo_ratings = pd.read_csv('elo.csv')
 over1100 = {label: len(elo_ratings[elo_ratings[label] > 1100]) for label in labels}
-print(f'1000+: {over1100}')
+print(f'1100+: {over1100}')
 
 match = elo.EloMatch([elo.Player(n, 1000) for n in labels])
 
