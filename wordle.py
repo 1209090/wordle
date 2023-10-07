@@ -14,8 +14,6 @@ for label in labels:
     words[label + 'scores'] = 7 - pd.to_numeric(words[label], errors='coerce')
 
 elo_ratings = pd.read_csv('elo.csv')
-over1100 = {label: len(elo_ratings[elo_ratings[label] > 1100]) for label in labels}
-print(f'1100+: {over1100}')
 
 match = elo.EloMatch([elo.Player(n, 1000) for n in labels])
 
@@ -37,7 +35,7 @@ class Word:
         return f"{self.id} {self.word} {self.date} {self.guesses} {self.elo}"
 
     def to_row(self):
-        elo = [f"**{n}**" if n > 1100 else f"{n}" for n in self.elo]
+        elo = [f"{n}" for n in self.elo]
         return [str(self.id), self.date.strftime('%Y-%m-%d'), self.word] + self.guesses + elo
 
     def header(self):
