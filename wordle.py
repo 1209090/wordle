@@ -91,11 +91,11 @@ def totals(matches, date):
         elif x['scores'] > y['scores']:
             res[x['name']] += 3
             if date >= NEW_CHAMP_DATE:
-                res[x['name']] += x['scores'] - y['scores']
+                res[x['name']] += x['scores'] - y['scores'] - 1
         else:
             res[y['name']] += 3
             if date >= NEW_CHAMP_DATE:
-                res[y['name']] += y['scores'] - x['scores']
+                res[y['name']] += y['scores'] - x['scores'] - 1
     return dict(res)
 
 def date(row):
