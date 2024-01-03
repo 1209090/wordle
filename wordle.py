@@ -6,6 +6,7 @@ import elo
 import pandas as pd
 
 START_DATE = datetime.fromisoformat('2022-01-06')
+NEW_CHAMP_DATE = datetime.fromisoformat('2024-01-01')
 
 labels = ['L', 'T', 'F', 'S', 'R', 'B']
 
@@ -81,7 +82,7 @@ def to_matches(row):
                 day.append(({'name': x, 'scores': 7 - xi}, {'name': y, 'scores': 7 - yi}))
     return day
 
-def totals(matches):
+def totals(matches, date):
     res = defaultdict(lambda: 0)
     for (x, y) in matches:
         if x['scores'] == y['scores']:
@@ -89,16 +90,21 @@ def totals(matches):
             res[y['name']] += 1
         elif x['scores'] > y['scores']:
             res[x['name']] += 3
+            if date >= NEW_CHAMP_DATE:
+                res[x['name']] += x['scores'] - y['scores']
         else:
             res[y['name']] += 3
+            if date >= NEW_CHAMP_DATE:
+                res[y['name']] += y['scores'] - x['scores']
     return dict(res)
 
 def date(row):
     return START_DATE + timedelta(days=to_int(row['id']))
 
 def make_day(row):
-    res = totals(to_matches(row))
-    res['date'] = date(row)
+    row_date = date(row)
+    res = totals(to_matches(row), row_date)
+    res['date'] = row_date
     return res
 
 def squash(days):
