@@ -185,23 +185,6 @@ p minmax
 num = 4
 output = [' ' * 11 + games.last(num * 7).reverse.map(&:word).join(' ')]
 
-data = scores.last_metric1(num * 7).transform_values do |scs|
-  arr = []
-  in_groups(scs, num).each_with_index do |group, idx|
-    group.each { |e| arr << e * (num - idx) / num }
-  end
-  arr
-end
-CSV.open('leaderboard.csv', 'w') do |csv|
-  csv << ['слово'] + Game::NAMES
-  totals = data.transform_values { |scs| scs.sum }
-  csv << ['итого'] + Game::NAMES.map { |n| totals[n].round(2) }
-  data['word'] = games.last(num * 7).reverse.map(&:word)
-  (num * 7).times do |idx|
-    csv << [data['word'][idx]] + Game::NAMES.map { |k| data[k][idx].round(2) }
-  end
-end
-
 absolute = games.reduce(Hash.new(0)) do |acc, game|
   if game.ranks.compact.size > 1
     name, _ = game.ranks.find { |_, v| v == 1 }
