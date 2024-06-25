@@ -2,7 +2,6 @@ import csv
 from datetime import datetime, timedelta
 from collections import defaultdict, namedtuple
 from itertools import groupby
-import elo
 import pandas as pd
 
 START_DATE = datetime.fromisoformat('2022-01-06')
@@ -15,8 +14,6 @@ for label in labels:
     words[label + 'scores'] = 7 - pd.to_numeric(words[label], errors='coerce')
 
 elo_ratings = pd.read_csv('elo.csv')
-
-match = elo.EloMatch([elo.Player(n, 1000) for n in labels])
 
 with open('elo.csv') as csvfile:
     ELO = list(csv.DictReader(csvfile))
