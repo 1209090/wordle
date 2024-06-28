@@ -2,18 +2,11 @@ import csv
 from datetime import datetime, timedelta
 from collections import defaultdict, namedtuple
 from itertools import groupby
-import pandas as pd
 
 START_DATE = datetime.fromisoformat('2022-01-06')
 NEW_CHAMP_DATE = datetime.fromisoformat('2024-01-01')
 
 labels = ['L', 'T', 'F', 'S', 'R', 'B']
-
-words = pd.read_csv('wordle.csv')
-for label in labels:
-    words[label + 'scores'] = 7 - pd.to_numeric(words[label], errors='coerce')
-
-elo_ratings = pd.read_csv('elo.csv')
 
 with open('elo.csv') as csvfile:
     ELO = list(csv.DictReader(csvfile))
@@ -46,10 +39,6 @@ class Word:
         if elo is not None:
             elo = list(map(to_int, [elo['L'], elo['T'], elo['F'], elo['S'], elo['R'], elo['B']]))
         return Word(row['id'], row['word'], START_DATE + timedelta(days=to_int(row['id'])), guesses, elo)
-
-def scores(self):
-    guesses = self.guesses
-    scores = [7 - x if x is not None else None for x in guesses]
 
 def to_int(s):
     return int(s) if s.isdigit() else None
