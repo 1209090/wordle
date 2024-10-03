@@ -1,4 +1,4 @@
-/usr/bin/env ruby wordle.rb
+# /usr/bin/env ruby wordle.rb
 python3 wordle.py
 /usr/bin/env ruby -rcsv \
   -e "data = CSV.readlines 'week-champs.csv', headers: true" \
