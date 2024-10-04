@@ -53,12 +53,12 @@ def mdrow(lst, file=None):
         print(res, file=file)
     return res
 
-with open('README.md', 'w', newline='\n') as f:
-    words = [Word.create_word(row) for row in rows]
-    mdrow(words[0].header(), f)
-    mdrow(['---'] * len(words[0].header()), f)
-    for word in words:
-        mdrow(word.to_row(), f)
+# with open('README.md', 'w', newline='\n') as f:
+#     words = [Word.create_word(row) for row in rows]
+#     mdrow(words[0].header(), f)
+#     mdrow(['---'] * len(words[0].header()), f)
+#     for word in words:
+#         mdrow(word.to_row(), f)
 
 def to_matches(row):
     day = []
