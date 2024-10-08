@@ -8,38 +8,6 @@ NEW_CHAMP_DATE = datetime.fromisoformat('2024-01-01')
 
 labels = ['L', 'T', 'F', 'S', 'R', 'B']
 
-with open('elo.csv') as csvfile:
-    ELO = list(csv.DictReader(csvfile))
-
-class Word:
-    def __init__(self, id, word, date, guesses, elo):
-        self.id = id
-        self.word = word
-        self.date = date
-        self.guesses = guesses
-        self.elo = elo
-
-    def __repr__(self):
-        return f"Word({self.id}, {self.word}, {self.date}, {self.guesses}, {self.elo})"
-
-    def __str__(self):
-        return f"{self.id} {self.word} {self.date} {self.guesses} {self.elo}"
-
-    def to_row(self):
-        elo = [f"{n}" for n in self.elo]
-        return [str(self.id), self.date.strftime('%Y-%m-%d'), self.word] + self.guesses + elo
-
-    def header(self):
-        return ['id', 'date', 'word'] + labels + labels
-
-    @staticmethod
-    def create_word(row):
-        guesses = [row[name] for name in labels]
-        elo = next(filter(lambda erow: erow['слово'] == row['word'], ELO), None)
-        if elo is not None:
-            elo = list(map(to_int, [elo['L'], elo['T'], elo['F'], elo['S'], elo['R'], elo['B']]))
-        return Word(row['id'], row['word'], START_DATE + timedelta(days=to_int(row['id'])), guesses, elo)
-
 def to_int(s):
     return int(s) if s.isdigit() else None
 
@@ -52,13 +20,6 @@ def mdrow(lst, file=None):
     if file is not None:
         print(res, file=file)
     return res
-
-# with open('README.md', 'w', newline='\n') as f:
-#     words = [Word.create_word(row) for row in rows]
-#     mdrow(words[0].header(), f)
-#     mdrow(['---'] * len(words[0].header()), f)
-#     for word in words:
-#         mdrow(word.to_row(), f)
 
 def to_matches(row):
     day = []
@@ -142,6 +103,6 @@ def abschamps(lines, finished):
 
 print(f'Week: {abschamps(lines, finished)}')
 
-with open('week-champs.csv', 'w', newline='') as f:
+with open('stats.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerows(lines)
