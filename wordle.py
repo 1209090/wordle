@@ -73,21 +73,6 @@ def make_periods(days):
         weeks.append(scores)
     return weeks
 
-vals = list(map(make_day, rows))
-weeks = make_periods(vals)
-current_id = to_int(rows[0]['id'])
-finished = False
-lines = []
-lines.append(['date', 'nums'] + labels)
-for week in weeks:
-    line = [week[name] if name in week else 0 for name in labels]
-    num = (week['date'] - START_DATE).days
-    line.insert(0, week['date'].strftime('%Y-%m-%d'))
-    line.insert(1, f"{num}-{num + 6}")
-    lines.append(line)
-    if current_id == num + 6:
-        finished = True
-
 def abschamps(lines, finished):
     def champs(line):
         maxval = max(line[2:])
@@ -101,8 +86,27 @@ def abschamps(lines, finished):
     abschamps = {labels[x]: abschamps.count(x) for x in set(abschamps)}
     return abschamps
 
-print(f'Week: {abschamps(lines, finished)}')
+def main():
+    vals = list(map(make_day, rows))
+    weeks = make_periods(vals)
+    current_id = to_int(rows[0]['id'])
+    finished = False
+    lines = []
+    lines.append(['date', 'nums'] + labels)
+    for week in weeks:
+        line = [week[name] if name in week else 0 for name in labels]
+        num = (week['date'] - START_DATE).days
+        line.insert(0, week['date'].strftime('%Y-%m-%d'))
+        line.insert(1, f"{num}-{num + 6}")
+        lines.append(line)
+        if current_id == num + 6:
+            finished = True
+    
+    print(f'Week: {abschamps(lines, finished)}')
+    
+    with open('stats.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(lines)
 
-with open('stats.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerows(lines)
+if __name__ == "__main__":
+    main()
