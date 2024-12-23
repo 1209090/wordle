@@ -32,6 +32,8 @@ def to_matches(row):
 def totals(matches, date):
     res = defaultdict(lambda: 0)
     for (x, y) in matches:
+        if x['scores'] == 0 and y['scores'] == 0:
+            continue
         if x['scores'] == y['scores']:
             res[x['name']] += 1
             res[y['name']] += 1
