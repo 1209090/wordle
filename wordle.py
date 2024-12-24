@@ -79,6 +79,7 @@ def abschamps(lines, finished):
     def champs(line):
         maxval = max(line[2:])
         champs = [i for i, x in enumerate(line[2:]) if x == maxval]
+        # print(f'{line}: {champs}')
         return champs
     abschamps = []
     for line in lines[2:]:
