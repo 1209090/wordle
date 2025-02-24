@@ -14,13 +14,6 @@ def to_int(s):
 with open('wordle.csv') as csvfile:
     rows = list(csv.DictReader(csvfile))
 
-def mdrow(lst, file=None):
-    res = '|'.join(lst)
-    res = f'|{res}|'
-    if file is not None:
-        print(res, file=file)
-    return res
-
 def to_matches(row):
     day = []
     for x in labels:
