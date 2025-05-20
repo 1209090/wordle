@@ -6,6 +6,8 @@ from itertools import groupby
 START_DATE = datetime.fromisoformat('2022-01-06')
 NEW_CHAMP_DATE = datetime.fromisoformat('2024-01-01')
 
+NEW_BONUS_DATE = datetime.fromisoformat('2025-05-19')
+
 labels = ['L', 'T', 'F', 'S', 'R', 'B']
 
 def to_int(s):
@@ -24,7 +26,10 @@ def to_matches(row):
 
 def totals(matches, date):
     res = defaultdict(lambda: 0)
+    players = set()
     for (x, y) in matches:
+        players.add(x['name'])
+        players.add(y['name'])
         if x['scores'] == 0 and y['scores'] == 0:
             continue
         if x['scores'] == y['scores']:
@@ -38,7 +43,14 @@ def totals(matches, date):
             res[y['name']] += 3
             if date >= NEW_CHAMP_DATE:
                 res[y['name']] += y['scores'] - x['scores'] - 1
-    return dict(res)
+    res = dict(res)
+    if date >= NEW_BONUS_DATE:
+        maximum = max(res.values())
+        winners = [k for k, v in res.items() if v == maximum]
+        if len(winners) == 1:
+            bonus = max(0, len(players) - 3)
+            res[winners[0]] += bonus
+    return res
 
 def date(row):
     return START_DATE + timedelta(days=to_int(row['id']))
