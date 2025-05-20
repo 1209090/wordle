@@ -5,7 +5,6 @@ from itertools import groupby
 
 START_DATE = datetime.fromisoformat('2022-01-06')
 NEW_CHAMP_DATE = datetime.fromisoformat('2024-01-01')
-
 NEW_BONUS_DATE = datetime.fromisoformat('2025-05-19')
 
 labels = ['L', 'T', 'F', 'S', 'R', 'B']
@@ -44,7 +43,7 @@ def totals(matches, date):
             if date >= NEW_CHAMP_DATE:
                 res[y['name']] += y['scores'] - x['scores'] - 1
     res = dict(res)
-    if date >= NEW_BONUS_DATE:
+    if date >= NEW_BONUS_DATE and res:
         maximum = max(res.values())
         winners = [k for k, v in res.items() if v == maximum]
         if len(winners) == 1:
