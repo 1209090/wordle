@@ -109,7 +109,8 @@ def main():
         if current_id == num + 6:
             finished = True
     
-    print(f'Week: {abschamps(lines, finished)}')
+    sorted_champs = sorted(abschamps(lines, finished).items(), key=lambda item: item[1], reverse=True)
+    print(", ".join([f"{k} {v}" for k, v in sorted_champs]))
     
     with open('stats.csv', 'w', newline='') as f:
         writer = csv.writer(f)
