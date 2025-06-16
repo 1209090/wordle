@@ -7,7 +7,7 @@ START_DATE = datetime.fromisoformat('2022-01-06')
 NEW_CHAMP_DATE = datetime.fromisoformat('2024-01-01')
 NEW_BONUS_DATE = datetime.fromisoformat('2025-05-19')
 
-labels = ['L', 'T', 'F', 'S', 'R', 'B']
+labels = ['L', 'T', 'F', 'S', 'R', 'B', 'A']
 
 def to_int(s):
     return int(s) if s.isdigit() else None
