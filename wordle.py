@@ -51,6 +51,25 @@ def totals(matches, date):
             res[winners[0]] += bonus
     return res
 
+def pretty_print(dic):
+    sorted_dict = sorted(dic.items(), key=lambda item: item[1], reverse=True)
+    return ", ".join([f"{k} {v}" for k, v in sorted_dict])
+
+def winners():
+    res = defaultdict(lambda: 0)
+    for row in rows:
+        vals = {}
+        for x in labels:
+            if (xi := to_int(row[x])) is not None:
+                vals[x] = xi
+        minimum = min(vals.values())
+        winners = [k for k, v in vals.items() if v == minimum]
+        if len(winners) == 1:
+            res[winners[0]] += 1
+    print(pretty_print(res))
+
+winners()
+
 def date(row):
     return START_DATE + timedelta(days=to_int(row['id']))
 
@@ -108,10 +127,9 @@ def main():
         lines.append(line)
         if current_id == num + 6:
             finished = True
-    
-    sorted_champs = sorted(abschamps(lines, finished).items(), key=lambda item: item[1], reverse=True)
-    print(", ".join([f"{k} {v}" for k, v in sorted_champs]))
-    
+
+    print(pretty_print(abschamps(lines, finished)))
+
     with open('stats.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(lines)
