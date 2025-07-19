@@ -62,6 +62,8 @@ def winners():
         for x in labels:
             if (xi := to_int(row[x])) is not None:
                 vals[x] = xi
+        if not vals:
+            return
         minimum = min(vals.values())
         winners = [k for k, v in vals.items() if v == minimum]
         if len(winners) == 1:
