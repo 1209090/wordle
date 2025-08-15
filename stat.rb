@@ -23,6 +23,10 @@ coeff = res.map do |k, v|
   [k, c]
 end.to_h
 corrected_res = players.map do |k|
-  [k, (stats.first[k].to_f * coeff[k]).round]
+  real = stats.first[k].to_i
+  corrected = (real * coeff[k]).round
+  val = corrected.to_s
+  val += " (#{real})" if real != corrected
+  [k, val]
 end.to_h
 puts pretty_print(corrected_res)
