@@ -1,6 +1,10 @@
 LASTN = 10
 
-def average(array) = array.sum.to_f / array.size
+def average(array)
+  return 0 if array.empty?
+  array.sum.to_f / array.size
+end
+
 def pretty_print(array, rev: true)
   sorted = array.sort_by(&:last)
   sorted.reverse! if rev
