@@ -34,3 +34,13 @@ corrected_res = players.map do |k|
   [k, val]
 end.to_h
 puts pretty_print(corrected_res)
+
+year = data.select { |row| row['id'].to_i >= 1257 }
+ys = year.reduce({}) do |acc, row|
+  players.each do |k|
+    acc[k] ||= []
+    acc[k] << row[k].to_i if row[k]
+  end
+  acc
+end
+pp ys.transform_values { avg = average(_1).round(3); _1.tally.sort_by(&:first).to_h.merge('avg' => avg) }
