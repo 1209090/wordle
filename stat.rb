@@ -14,6 +14,9 @@ stats = CSV.readlines 'stats.csv', headers: true
 players = stats.headers[2..-1]
 res = stats.reduce(Hash.new(0)) { |acc, row| players.each { |k| acc[k] += row[k].to_i }; acc }
 puts pretty_print(res)
+artem_res = stats.select { |row| row['date'] >= '2025-06-16' }.reduce(Hash.new(0)) { |acc, row| players.each { |k| acc[k] += row[k].to_i }; acc }
+puts pretty_print(artem_res)
+
 data = CSV.read('wordle.csv', headers: true)
 res = data.headers[2..].map { |k| [k, average(data[k].first(LASTN).compact.map(&:to_i)).round(2)] }
 puts pretty_print(res, rev: false)
